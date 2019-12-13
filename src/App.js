@@ -1,26 +1,70 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import List from './List';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      todoValue: '',
+      listItems: []
+    }
+  }
+
+  handleInputChange = event => {
+    const inputElement = event.target;
+
+    this.setState(() => {
+      return { todoValue: inputElement.value }
+    })
+  }
+
+  handleFormSubmit = event => {
+    event.preventDefault();
+
+    if (this.state.todoValue === '') {
+      return;
+    }
+
+    this.setState(() => {
+      return {
+        todoValue: '',
+        listItems: this.state.listItems.concat([this.state.todoValue])
+      }
+    })
+  }
+
+  handleDeleteItem = index => {
+    const listItems = this.state.listItems;
+    const updatedListItems = listItems.filter((item, i) =>  i != index);
+
+    this.setState(() => {
+      return { listItems: updatedListItems }
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <form onSubmit={this.handleFormSubmit}>
+          <div>
+            <input
+              type="text"
+              onChange={this.handleInputChange}
+              value={this.state.todoValue}
+            />
+            <button type="submit">Add</button>
+          </div>
+        </form>
+
+        <div className="list-items">
+          <List
+            listItems={this.state.listItems}
+            deleteItem={this.handleDeleteItem}
+          />
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
